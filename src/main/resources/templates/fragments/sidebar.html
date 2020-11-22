@@ -1,0 +1,28 @@
+<div th:fragment="sidebar">
+  <!-- Sidebar -->
+  <div id="sidebar-wrapper">
+    <ul class="sidebar-nav">
+      <li class="sidebar-brand">
+        <a href="#">Free inc. Library </a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Dashboard</a>
+        <a sec:authorize="hasRole('MODERATOR')" th:href="@{/moderator}">Dashboard</a>
+      </li>
+      <li sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/admin/author}">Authors</a>
+      </li>
+      <li sec:authorize="hasAnyRole('ADMIN', 'MODERATOR')">
+        <a th:href="@{/admin/add}">Add Book</a>
+      </li>
+      <li sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/admin/publisher}">Add Publisher</a>
+      </li>
+    </ul>
+  </div>
+  <div class="menu-buttonss">
+    <button type="button" class="btn btn-default" id="menu-toggle">
+      <i class="fa fa-bars fa-2x" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org">
+  <head th:replace="fragments/header_inc::head">
+    <title>Update Book</title>
+  </head>
+  <body>
+    <div th:insert="fragments/header::header"></div>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-12">
+          <h4>Add Book</h4>
+          <div class="card mb-3">
+            <img
+              th:src="@{/images/pexels-stanislav-kondratiev-2908984.jpg}"
+              class="card-img-top"
+              alt="bookshelf"
+              height="550"
+              style="object-fit: cover"
+            />
+            <div class="card-body">
+              <form th:action="@{/admin/updateBook}" th:object="${update}" method="POST">
+                <div class="form-group">
+                  <label for="bookId" class="d-none">Book library id</label>
+                  <input type="number" th:value="${book.id}" name="bookId" class="form-control col-md-1" readonly />
+                </div>
+                <!-- Author -->
+                <div class="form-group">
+                  <label for="exampleFormControlSelect1">Author</label>
+                  <select class="form-control" th:field="*{author.id}" id="exampleFormControlSelect1">
+                    <th:block th:each="author : ${author}">
+                      <option th:value="${author.id}" th:text="${author.authorName}" class="id"></option>
+                    </th:block>
+                  </select>
+                  <input type="number" name="authorId" th:value="${autorId}" class="form-control d-none authorId col-md-1" readonly />
+                </div>
+                <!-- Book Name -->
+                <div class="form-group">
+                  <label for="bookTitle">Book Name</label>
+                  <input type="text" th:field="*{bookTitle}" class="form-control" />
+                </div>
+                <!-- Sub title -->
+                <div class="form-group">
+                  <label for="subTitle">Subtitle</label>
+                  <input type="text" th:field="*{subTitle}" class="form-control" />
+                </div>
+                <!-- Publisher -->
+                <div class="form-group">
+                  <label for="exampleFormControlSelect2">Publisher</label>
+                  <select class="form-control" th:field="*{publisher.id}" id="exampleFormControlSelect2">
+                    <th:block th:each="publisher : ${publisher}">
+                      <option selected="selected" th:value="${publisher.id}" th:text="${publisher.publisher}" class="id"></option>
+                    </th:block>
+                  </select>
+                  <input type="number" name="publishId" th:value="${publishId}" class="form-control d-none publishId col-md-1" readonly />
+                </div>
+                <!-- ISBN -->
+                <div class="form-group">
+                  <label for="isbNumber">Isbn</label>
+                  <input type="text" th:field="*{isbn}" class="form-control" />
+                </div>
+                <!-- Series Name -->
+                <div class="form-group">
+                  <label for="seriesName">Series name</label>
+                  <input type="text" th:field="*{seriesName}" class="form-control" />
+                </div>
+                <!-- Description -->
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <input type="text" th:field="*{bookDescription}" class="form-control" />
+                </div>
+                <!-- Add button -->
+                <button type="submit" class="btn btn-outline-success btn-sm btn-block">
+                  Add <i class="fa fa-pluss" aria-hidden="true"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:insert="fragments/footer::footer"></div>
+    <script>
+      $(document).ready(function () {
+        $("#exampleFormControlSelect1").on("click", function (e) {
+          $(".authorId").val($(this).val());
+          console.log($(".authorId").val());
+        });
+        $("#exampleFormControlSelect2").on("click", function (e) {
+          $(".publishId").val($(this).val());
+          console.log($(".publishId").val());
+        });
+      });
+    </script>
+  </body>
+</html>

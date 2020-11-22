@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org">
+  <meta charset="UTF-8" />
+  <head th:replace="fragments/header_inc::head">
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <div th:insert="fragments/header::header"></div>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-3">Welcome to library system</h1>
+        <p class="lead">We would like to get inform about books and authors from you, Thank you !</p>
+      </div>
+    </div>
+
+    <div class="container my-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="input-group mb-3">
+            <input type="text" id="bookSearchBox" class="form-control mr-sm-2 searchControl" placeholder="Search" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="scrollspy-example" data-spy="scroll" data-target="#list-example" data-offset="0">
+            <th:block th:each="book : ${book}">
+              <div class="card mb-3 " id="filterCard" >
+                <div class="row no-gutters">
+                  <div class="col-md">
+                    <img th:src="@{/images/eco.jpg}" class="card-img" alt="books" />
+                  </div>
+                  <div class="col-md-10">
+                    <div class="card-body " >
+                      <h5 class="card-title" th:text="${book.bookTitle}">Card title</h5>
+                      <p class="card-text" th:text="${book.bookDescription}"></p>
+                      <p class="card-text" th:text="${book.author.authorName}"></p>
+                      <p class="card-text" th:text="${book.isbn}"></p>
+                      <p class="card-text" th:text="${book.subTitle}"></p>
+                      <p class="card-text" th:text="${book.seriesName}"></p>
+                      <p class="card-text" th:text="${book.publisher.publisher}"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </th:block>
+        </div>
+      </div>
+
+    <div th:insert="fragments/footer::footer"></div>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Book</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/fontawesome/css/font-awesome.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/custom.css}" rel="stylesheet" />
+  </head>
+  <body>
+    <header th:fragment="header">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand justify-self-center" href="#">
+            <i class="fa fa-book fa-2x" aria-hidden="true"></i>
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item active" sec:authorize="isAuthenticated()">
+                <a class="nav-link" sec:authorize="hasRole('USER')" th:href="@{/dashboard}">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" sec:authorize="hasRole('MODERATOR')" th:href="@{/moderator}">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item" th:if="${roles}">
+                <a class="nav-link" th:href="@{/login}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" sec:authorize="hasRole('MODERATOR')" th:href="@{/moderator/add}">Add book</a>
+                <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:href="@{/admin/add}">Add book</a>
+              </li>
+              <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:href="@{/admin/author}">Add Author</a>
+              </li>
+              <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:href="@{/admin/publisher}">Add Publisher</a>
+              </li>
+              <li class="nav-item" th:unless="${roles}">
+                <a class="nav-link" th:href="@{/logout}">Logout</a>
+              </li>
+
+              <li class="nav-item" th:if="${roles}">
+                <a class="nav-link" th:href="@{/signup}">Sign up</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+  </body>
+</html>

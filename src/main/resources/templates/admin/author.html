@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org">
+  <head th:replace="fragments/header_inc::head">
+    <title>Add Author</title>
+  </head>
+  <body>
+    <label th:replace="fragments/header::header"></label>
+    <div id="wrapper">
+      <div th:insert="fragments/sidebar::sidebar"></div>
+      <div class="container my-5" style="height: 114px">
+        <div class="row h-100 justify-content-center align-items-end">
+          <div class="col-md-8">
+            <div class="input-group mb-3">
+              <input type="text" id="bookSearchBox" class="form-control mr-sm-2" placeholder="Search" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row justify-content-end m-3">
+          <button type="button" class="btn align-items-center" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">
+            <i class="fa fa-plus-square-o fa-3x text-primary" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div class="container">
+        <div class="col-md-12">
+          <table class="table">
+            <caption>
+              Authors
+            </caption>
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Author Name</th>
+                <th scope="col">Author Summary</th>
+                <th scope="col">Update</th>
+              </tr>
+            </thead>
+            <tbody>
+              <th:block th:each="author : ${authorList}">
+                <tr class="edit">
+                  <th scope="row" th:text="${author.id}"></th>
+                  <td th:text="${author.authorName}" class="author"></td>
+                  <td th:text="${author.authorSummary}" class="summary"></td>
+                  <td><a th:href="@{/admin/update_author/{id}(id=${author.id})}" class="btn btn-outline-primary">Update</a></td>
+                </tr>
+              </th:block>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="card">
+              <div class="card-header bg-transparent border-0">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h5>Add New Author</h5>
+                  </div>
+                  <div class="col-md-6">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <form action="#" th:action="@{/admin/add_author}" th:object="${author}" method="POST">
+                  <div class="form-group">
+                    <label for="publisher">Author Name</label> <input type="text" th:field="*{authorName}" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="bookTitle">Author Summary</label>
+                    <textarea th:field="*{authorSummary}" class="form-control" th:row="3"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-outline-success btn-sm btn-block">Add author</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div th:insert="fragments/footer::footer"></div>
+  </body>
+</html>
