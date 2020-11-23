@@ -8,6 +8,16 @@
 * Moderator
 * User
 
+### Users username and passwords
+
+* User
+  * user12345
+* moderator
+  * moderator12345
+* admin
+  * admin12345
+
+
 ### Privileges of users
 
 * Admin
