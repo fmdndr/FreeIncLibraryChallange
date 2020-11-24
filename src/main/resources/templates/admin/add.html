@@ -20,7 +20,7 @@
               style="object-fit: cover"
             />
             <div class="card-body">
-              <form th:action="@{/admin/add}" th:object="${book}" method="POST">
+              <form th:action="@{/admin/add_book}" th:object="${book}" method="POST">
                 <div class="form-group">
                   <label for="exampleFormControlSelect1">Author</label>
                   <select class="form-control" th:field="*{author.id}" id="exampleFormControlSelect1">

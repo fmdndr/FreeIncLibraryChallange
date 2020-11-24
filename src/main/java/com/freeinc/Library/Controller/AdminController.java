@@ -72,6 +72,8 @@ public class AdminController {
 		return "redirect:.";
 	}
 
+	
+	
 	// Update book page view
 	@GetMapping("/update/{id}")
 	public String updateBook(@ModelAttribute("book") Book book, Model model, @PathVariable int id) {
