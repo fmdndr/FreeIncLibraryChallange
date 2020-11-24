@@ -12,16 +12,20 @@
         <div class="col-md-12">
           <h4>Add Book</h4>
           <!--Book Image feature will added-->
+          <form th:action="@{/admin/add_book}" th:object="${book}" method="POST" enctype="multipart/form-data">
           <div class="card mb-3">
+            <div class="form-group">
+              <label for="uploadBookFoto"> Upload Book Photo</label>
+              <input type="file" name="file" class="form-control-file">
+            </div>
             <img
               th:src="@{/images/pexels-stanislav-kondratiev-2908984.jpg}"
-              class="card-img-top"
+              class="card-img-top d-none"
               alt="bookshelf"
               height="550"
               style="object-fit: cover"
             />
-            <div class="card-body">
-              <form th:action="@{/admin/add_book}" th:object="${book}" method="POST">
+            <div class="card-body">             
                 <!--Author-->
                 <div class="form-group">
                   <label for="authorAd">Author</label>
@@ -66,9 +70,9 @@
                 <button type="submit" class="btn btn-outline-success btn-sm btn-block">
                   Add <i class="fa fa-pluss" aria-hidden="true"></i>
                 </button>
-              </form>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

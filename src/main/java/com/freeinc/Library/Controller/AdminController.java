@@ -1,5 +1,9 @@
 package com.freeinc.Library.Controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +11,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.freeinc.Library.Business.IAuthorService;
 import com.freeinc.Library.Business.IBookService;
@@ -25,6 +31,8 @@ import com.freeinc.Library.Entites.Publisher;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+	private final String UPLOAD_DIR = "./uploads/";
 
 	@Autowired
 	public IUserService userSerivce;
@@ -61,15 +69,24 @@ public class AdminController {
 	// Add book process
 	@PostMapping("/add_book")
 	public String addBook(@ModelAttribute("book") Book book, Model bookModel,
-			@RequestParam(name = "authorId") int authorId, @RequestParam(name = "publishId") int publishId) {
-		Author get = authorService.findById(authorId);
-		get.getBook().add(book);
-		book.setAuthor(get);
-		Publisher foundedPublisher = publisherService.findById(publishId);
-		foundedPublisher.getBook().add(book);
-		book.setPublisher(foundedPublisher);
-		bookService.save(book);
-		return "redirect:.";
+			@RequestParam(name = "authorId") int authorId, @RequestParam(name = "publishId") int publishId,
+			@RequestParam(name = "file") MultipartFile file) {
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		try {
+			Path path = Paths.get(UPLOAD_DIR + book.getBookTitle() + "/" + fileName);
+			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			Author get = authorService.findById(authorId);
+			get.getBook().add(book);
+			book.setAuthor(get);
+			Publisher foundedPublisher = publisherService.findById(publishId);
+			foundedPublisher.getBook().add(book);
+			book.setPublisher(foundedPublisher);
+			bookService.save(book);
+			return "redirect:.";
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return "redirect:.";
+		}
 	}
 
 	// Update book page view
@@ -184,7 +201,6 @@ public class AdminController {
 		return "redirect:..";
 	}
 
-  
 	@GetMapping("/update_author/{id}")
 	public String showUpdateAuthor(@ModelAttribute("author") Author author, Model viewUpdateModel,
 			@PathVariable(name = "id") int id) {
