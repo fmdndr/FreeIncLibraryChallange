@@ -72,8 +72,6 @@ public class AdminController {
 		return "redirect:.";
 	}
 
-	
-	
 	// Update book page view
 	@GetMapping("/update/{id}")
 	public String updateBook(@ModelAttribute("book") Book book, Model model, @PathVariable int id) {
@@ -91,6 +89,7 @@ public class AdminController {
 	public String processUpdate(@ModelAttribute("update") Book book, Model bookModel,
 			@RequestParam(name = "bookId") int bookId, @RequestParam(name = "authorId") int authorId,
 			@RequestParam(name = "publishId") int publishId) {
+		// POJO
 		Book updatedBook = bookService.findById(bookId);
 		System.out.println(bookId);
 		Author get = authorService.findById(authorId);
@@ -185,6 +184,7 @@ public class AdminController {
 		return "redirect:..";
 	}
 
+  
 	@GetMapping("/update_author/{id}")
 	public String showUpdateAuthor(@ModelAttribute("author") Author author, Model viewUpdateModel,
 			@PathVariable(name = "id") int id) {

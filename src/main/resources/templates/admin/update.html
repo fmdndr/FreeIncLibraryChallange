@@ -9,6 +9,7 @@
       <div class="row">
         <div class="col-md-12">
           <h4>Add Book</h4>
+          <!--Book Image feature will add-->
           <div class="card mb-3">
             <img
               th:src="@{/images/pexels-stanislav-kondratiev-2908984.jpg}"
@@ -20,18 +21,15 @@
             <div class="card-body">
               <form th:action="@{/admin/updateBook}" th:object="${update}" method="POST">
                 <div class="form-group">
-                  <label for="bookId" class="d-none">Book library id</label>
                   <input type="number" th:value="${book.id}" name="bookId" class="form-control col-md-1" readonly />
                 </div>
                 <!-- Author -->
                 <div class="form-group">
                   <label for="exampleFormControlSelect1">Author</label>
-                  <select class="form-control" th:field="*{author.id}" id="exampleFormControlSelect1">
-                    <th:block th:each="author : ${author}">
-                      <option th:value="${author.id}" th:text="${author.authorName}" class="id"></option>
-                    </th:block>
+                  <select class="form-control" name="authorId" th:value="${authorId}" th:required="true">
+                    <option disabled selected value="">-- Select One --</option>
+                    <option th:each="author : ${author}" th:value="${author.id}" th:text="${author.authorName}" class="id"></option>
                   </select>
-                  <input type="number" name="authorId" th:value="${autorId}" class="form-control d-none authorId col-md-1" readonly />
                 </div>
                 <!-- Book Name -->
                 <div class="form-group">
@@ -45,13 +43,11 @@
                 </div>
                 <!-- Publisher -->
                 <div class="form-group">
-                  <label for="exampleFormControlSelect2">Publisher</label>
-                  <select class="form-control" th:field="*{publisher.id}" id="exampleFormControlSelect2">
-                    <th:block th:each="publisher : ${publisher}">
-                      <option selected="selected" th:value="${publisher.id}" th:text="${publisher.publisher}" class="id"></option>
-                    </th:block>
+                  <label for="publisherUpdate">Publisher</label>
+                  <select class="form-control" name="publishId" th:value="${publishId}" th:required="true">
+                    <option disabled selected value="">-- Select One --</option>
+                    <option th:each="publisher : ${publisher}" th:value="${publisher.id}" th:text="${publisher.publisher}" class="id"></option>
                   </select>
-                  <input type="number" name="publishId" th:value="${publishId}" class="form-control d-none publishId col-md-1" readonly />
                 </div>
                 <!-- ISBN -->
                 <div class="form-group">
@@ -80,17 +76,5 @@
     </div>
 
     <div th:insert="fragments/footer::footer"></div>
-    <script>
-      $(document).ready(function () {
-        $("#exampleFormControlSelect1").on("click", function (e) {
-          $(".authorId").val($(this).val());
-          console.log($(".authorId").val());
-        });
-        $("#exampleFormControlSelect2").on("click", function (e) {
-          $(".publishId").val($(this).val());
-          console.log($(".publishId").val());
-        });
-      });
-    </script>
   </body>
 </html>

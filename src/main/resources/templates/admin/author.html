@@ -35,6 +35,7 @@
                 <th scope="col">Author Name</th>
                 <th scope="col">Author Summary</th>
                 <th scope="col">Update</th>
+                <th scope="col">Remove</th>
               </tr>
             </thead>
             <tbody>
@@ -44,6 +45,11 @@
                   <td th:text="${author.authorName}" class="author"></td>
                   <td th:text="${author.authorSummary}" class="summary"></td>
                   <td><a th:href="@{/admin/update_author/{id}(id=${author.id})}" class="btn btn-outline-primary">Update</a></td>
+                  <td>
+                    <form th:action="@{/admin/delete_author/{id}(id=${author.id})}" th:object="${author}" th:method="POST">
+                      <button type="submit" class="btn btn-outline-danger">Delete</button>
+                    </form>
+                  </td>
                 </tr>
               </th:block>
             </tbody>
@@ -51,7 +57,7 @@
         </div>
       </div>
     </div>
-
+    <!--Author add modal-->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -72,7 +78,8 @@
               <div class="card-body">
                 <form action="#" th:action="@{/admin/add_author}" th:object="${author}" method="POST">
                   <div class="form-group">
-                    <label for="publisher">Author Name</label> <input type="text" th:field="*{authorName}" class="form-control" />
+                    <label for="publisher">Author Name</label>
+                    <input type="text" th:field="*{authorName}" class="form-control" />
                   </div>
                   <div class="form-group">
                     <label for="bookTitle">Author Summary</label>

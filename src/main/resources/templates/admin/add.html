@@ -11,6 +11,7 @@
       <div class="row">
         <div class="col-md-12">
           <h4>Add Book</h4>
+          <!--Book Image feature will added-->
           <div class="card mb-3">
             <img
               th:src="@{/images/pexels-stanislav-kondratiev-2908984.jpg}"
@@ -21,48 +22,46 @@
             />
             <div class="card-body">
               <form th:action="@{/admin/add_book}" th:object="${book}" method="POST">
+                <!--Author-->
                 <div class="form-group">
-                  <label for="exampleFormControlSelect1">Author</label>
-                  <select class="form-control" th:field="*{author.id}" id="exampleFormControlSelect1">
-                    <th:block th:each="author : ${author}">
-                      <option th:value="${author.id}" th:text="${author.authorName}" class="id"></option>
-                    </th:block>
+                  <label for="authorAd">Author</label>
+                  <select class="form-control" name="authorId" th:value="${authorId}" th:required="true">
+                      <option disabled selected value="">-- Select One --</option>
+                      <option th:each="author : ${author}" th:value="${author.id}" th:text="${author.authorName}" class="id"></option>
                   </select>
                 </div>
-                <div class="form-group">
-                  <label for="bookId" class="d-none">Book library id</label>
-                  <input type="number" name="authorId" th:value="${autorId}" class="form-control d-none authorId col-md-1" readonly />
-                </div>
+                <!--Book Title-->
                 <div class="form-group">
                   <label for="bookTitle">Book Name</label>
-                  <input type="text" th:field="*{bookTitle}" class="form-control" />
+                  <input type="text" th:field="*{bookTitle}" class="form-control" th:required="true" />
                 </div>
+                <!--Subtitle-->
                 <div class="form-group">
                   <label for="subTitle">Subtitle</label>
-                  <input type="text" th:field="*{subTitle}" class="form-control" />
+                  <input type="text" th:field="*{subTitle}" class="form-control" th:required="true"/>
                 </div>
+                <!--Publisher-->
                 <div class="form-group">
                   <label for="exampleFormControlSelect2">Publisher</label>
-                  <select class="form-control" th:field="*{publisher.id}" id="exampleFormControlSelect2">
-                    <th:block th:each="publisher : ${publisher}">
-                      <option th:value="${publisher.id}" th:text="${publisher.publisher}" class="id"></option>
-                    </th:block>
+                  <select class="form-control" name="publishId" th:value="${publishId}" th:required="true">
+                    <option disabled selected value="">-- Select One --</option>
+                    <option th:each="publisher : ${publisher}" th:value="${publisher.id}" th:text="${publisher.publisher}" class="id"></option>
                   </select>
-                  <label for="bookId" class="d-none">Publisher id</label>
-                  <input type="number" name="publishId" th:value="${publishId}" class="form-control d-none publishId col-md-1" readonly />
                 </div>
-
+                <!--Isbn-->
                 <div class="form-group">
                   <label for="isbNumber">Isbn</label>
-                  <input type="text" th:field="*{isbn}" class="form-control" />
+                  <input type="text" th:field="*{isbn}" class="form-control" th:required="true"/>
                 </div>
+                <!--Series Name-->
                 <div class="form-group">
                   <label for="seriesName">Series name</label>
-                  <input type="text" th:field="*{seriesName}" class="form-control" />
+                  <input type="text" th:field="*{seriesName}" class="form-control" th:required="true" />
                 </div>
+                <!--Description-->
                 <div class="form-group">
                   <label for="interPretation">Description</label>
-                  <input type="text" th:field="*{bookDescription}" class="form-control" />
+                  <input type="text" th:field="*{bookDescription}" class="form-control" th:required="true" />
                 </div>
                 <button type="submit" class="btn btn-outline-success btn-sm btn-block">
                   Add <i class="fa fa-pluss" aria-hidden="true"></i>
@@ -73,17 +72,6 @@
         </div>
       </div>
     </div>
-
     <div th:insert="fragments/footer::footer"></div>
-    <script>
-      $("#exampleFormControlSelect1").on("click", function (e) {
-        $(".authorId").val($(this).val());
-        console.log($(".authorId").val());
-      });
-      $("#exampleFormControlSelect2").on("click", function (e) {
-        $(".publishId").val($(this).val());
-        console.log($(".publishId").val());
-      });
-    </script>
   </body>
 </html>

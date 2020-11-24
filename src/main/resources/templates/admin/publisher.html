@@ -40,7 +40,7 @@
               </thead>
               <tbody>
                 <th:block th:each="pub : ${pub}">
-                  <tr class="edit">
+                  <tr class="edit" id="filterCard">
                     <th scope="row" th:text="${pub.id}"></th>
                     <td th:text="${pub.publisher}" class="publisher"></td>
                     <td th:text="${pub.publisherDescription}" class="publisherDescription"></td>

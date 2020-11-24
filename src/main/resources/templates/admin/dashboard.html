@@ -67,7 +67,6 @@
                         <a th:href="@{/admin/update/{id}(id=${book.id})}" class="btn btn-outline-primary mr-3">Update</a>
                         <form th:action="@{/admin/delete_book/{id}(id=${book.id})}" th:object="${book}" th:method="POST">
                           <Button type="submit" class="btn btn-outline-danger"> Delete</Button>
-                         
                         </form>
                         </div>
                     </div>
