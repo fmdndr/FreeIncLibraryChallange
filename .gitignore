@@ -7,7 +7,7 @@ target/
 application.properties
 *.properties
 application.properties
-.book_images
+book_images
 ### STS ###
 .apt_generated
 .classpath
