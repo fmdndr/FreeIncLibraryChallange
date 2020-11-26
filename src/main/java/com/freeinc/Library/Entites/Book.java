@@ -27,19 +27,22 @@ public class Book {
 	private String isbn;
 	@Column(name = "book_description")
 	private String bookDescription;
+	@Column(name = "book_image_url")
+	private String bookImageUrl;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Author author;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Publisher publisher;
 
 	public Book(String bookTitle, String subTitle, String seriesName, String publisher, String isbn,
-			String bookDescription) {
+			String bookDescription, String bookImageUrl) {
 		super();
 		this.bookTitle = bookTitle;
 		this.subTitle = subTitle;
 		this.seriesName = seriesName;
 		this.isbn = isbn;
 		this.bookDescription = bookDescription;
+		this.bookImageUrl = bookImageUrl;
 
 	}
 
@@ -93,6 +96,14 @@ public class Book {
 
 	public void setBookDescription(String bookDescription) {
 		this.bookDescription = bookDescription;
+	}
+
+	public String getBookImageUrl() {
+		return bookImageUrl;
+	}
+
+	public void setBookImageUrl(String bookImageUrl) {
+		this.bookImageUrl = bookImageUrl;
 	}
 
 	public Publisher getPublisher() {

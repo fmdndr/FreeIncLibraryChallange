@@ -44,7 +44,7 @@
                 <div class="card mb-3 " id="filterCard" >
                   <div class="row no-gutters">
                     <div class="col-md">
-                      <img th:src="@{/images/eco.jpg}" class="card-img" alt="books" />
+                      <img th:src="@{${'/book_images/' + book.bookTitle + '/' + book.bookImageUrl}}" class="card-img" alt="books" />
                     </div>
                     <div class="col-md-10">
                       <div class="card-body " >

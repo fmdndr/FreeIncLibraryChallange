@@ -39,13 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// .antMatchers("/css/**", "/static/**", "/resources/**", "/.*.css").permitAll()
 
-		http.csrf().disable().authorizeRequests()
-		   
-		        .antMatchers("/").hasRole("USERS").antMatchers("/moderator/**")
-				.hasRole("MODERATOR").antMatchers("/admin/**").hasRole("ADMIN").and().formLogin()
-				.loginPage("/login").loginProcessingUrl("/authenticateTheUser")
-				.successHandler(customAuthenticationSuccessHandler).failureUrl("/") .permitAll().and().logout().logoutUrl("/logout")
-				.logoutSuccessUrl("/").permitAll().and().exceptionHandling().accessDeniedPage("/access-denied");
+		http.csrf().disable().authorizeRequests().antMatchers("/").hasRole("USERS").antMatchers("/moderator/**")
+				.hasRole("MODERATOR").antMatchers("/admin/**").hasRole("ADMIN").and().formLogin().loginPage("/login")
+				.loginProcessingUrl("/authenticateTheUser").successHandler(customAuthenticationSuccessHandler)
+				.failureUrl("/").permitAll().and().logout().logoutUrl("/logout").logoutSuccessUrl("/").permitAll().and()
+				.exceptionHandling().accessDeniedPage("/access-denied");
 
 	}
 

@@ -37,7 +37,7 @@ public class HibernateBookDao implements IBookDao {
 	public List<Book> getBooks() {
 		Session session = entityManager.unwrap(Session.class);
 		List<Book> book = session.createNativeQuery(
-				"SELECT book_id,book_title,book_description,isbn,series_name,sub_title,author_name as author,author_id ,publisher_id,publisher "
+				"SELECT book_id,book_title,book_image_url,book_description,isbn,series_name,sub_title,author_name as author,author_id ,publisher_id,publisher "
 						+ "FROM books LEFT JOIN author ON books.author_id=author.id "
 						+ "LEFT JOIN publisher ON books.publisher_id = publisher.id",
 				Book.class).getResultList();

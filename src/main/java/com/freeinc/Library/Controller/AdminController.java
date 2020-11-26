@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.freeinc.Library.Business.IAuthorService;
 import com.freeinc.Library.Business.IBookService;
 import com.freeinc.Library.Business.IPublisherService;
-import com.freeinc.Library.Business.IUserService;
 import com.freeinc.Library.Entites.Author;
 import com.freeinc.Library.Entites.Book;
 import com.freeinc.Library.Entites.Publisher;
@@ -32,49 +32,72 @@ import com.freeinc.Library.Entites.Publisher;
 @RequestMapping("/admin")
 public class AdminController {
 
-	private final String UPLOAD_DIR = "./uploads/";
+	private String UPLOAD_DIR = "./src/main/resources/static/book_images/";
 
+	private IBookService bookService;
+
+	private IPublisherService publisherService;
+
+	private IAuthorService authorService;
+
+	// Constructor Injection
 	@Autowired
-	public IUserService userSerivce;
-	@Autowired
-	public IBookService bookService;
-	@Autowired
-	public IPublisherService publisherService;
-	@Autowired
-	public IAuthorService authorService;
+	public AdminController(IBookService bookService, IPublisherService publisherService, IAuthorService authorService) {
+		this.bookService = bookService;
+		this.publisherService = publisherService;
+		this.authorService = authorService;
+	}
 
 	// Admin dashboard View
 	@GetMapping("")
-	public String showAdminPanel(Model model) {
-		Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-		String username = loggedInUser.getName();
-		model.addAttribute("username", username);
-		List<Book> book = bookService.getBooks();
-		model.addAttribute("book", book);
-
-		return "admin/dashboard";
+	public ModelAndView showAdminPanel(Model model) {
+		try {
+			Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+			String username = loggedInUser.getName();
+			model.addAttribute("username", username);
+			List<Book> book = bookService.getBooks();
+			model.addAttribute("book", book);
+			return new ModelAndView("admin/dashboard");
+		} catch (Exception e) {
+			model.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/dashboard");
+		}
 	}
 
 	// Add book getter
 	@GetMapping("/add")
-	public String showBookAdd(Model model) {
-		model.addAttribute("book", new Book());
-		List<Author> author = authorService.getAllAuthor();
-		model.addAttribute("author", author);
-		List<Publisher> pub = publisherService.getAll();
-		model.addAttribute("publisher", pub);
-		return "admin/add";
+	public ModelAndView showBook(Model showBookModel) {
+		try {
+			showBookModel.addAttribute("book", new Book());
+			List<Author> author = authorService.getAllAuthor();
+			showBookModel.addAttribute("author", author);
+			List<Publisher> pub = publisherService.getAll();
+			showBookModel.addAttribute("publisher", pub);
+			return new ModelAndView("admin/add");
+		} catch (Exception e) {
+			showBookModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/add");
+		}
 	}
 
 	// Add book process
 	@PostMapping("/add_book")
-	public String addBook(@ModelAttribute("book") Book book, Model bookModel,
+	public ModelAndView addBook(@ModelAttribute("book") Book book, Model bookModel,
 			@RequestParam(name = "authorId") int authorId, @RequestParam(name = "publishId") int publishId,
 			@RequestParam(name = "file") MultipartFile file) {
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
 		try {
-			Path path = Paths.get(UPLOAD_DIR + book.getBookTitle() + "/" + fileName);
-			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			String fileUploadDir = UPLOAD_DIR + book.getBookTitle();
+			Path uploadPath = Paths.get(fileUploadDir);
+
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
+			Path filePath = uploadPath.resolve(fileName);
+			Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+			System.out.println(filePath);
+			book.setBookImageUrl(fileName);
 			Author get = authorService.findById(authorId);
 			get.getBook().add(book);
 			book.setAuthor(get);
@@ -82,141 +105,209 @@ public class AdminController {
 			foundedPublisher.getBook().add(book);
 			book.setPublisher(foundedPublisher);
 			bookService.save(book);
-			return "redirect:.";
+			return new ModelAndView("redirect:.");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			return "redirect:.";
+			bookModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("redirect:.");
 		}
 	}
 
 	// Update book page view
 	@GetMapping("/update/{id}")
-	public String updateBook(@ModelAttribute("book") Book book, Model model, @PathVariable int id) {
-		book = bookService.findById(id);
-		List<Author> author = authorService.getAllAuthor();
-		model.addAttribute("author", author);
-		List<Publisher> pub = publisherService.getAll();
-		model.addAttribute("publisher", pub);
-		model.addAttribute("update", book);
-		return "admin/update";
+	public ModelAndView updateBook(@ModelAttribute("book") Book book, Model model, @PathVariable int id) {
+		try {
+			book = bookService.findById(id);
+			List<Author> author = authorService.getAllAuthor();
+			model.addAttribute("author", author);
+			List<Publisher> pub = publisherService.getAll();
+			model.addAttribute("publisher", pub);
+			model.addAttribute("update", book);
+			return new ModelAndView("admin/update");
+		} catch (Exception e) {
+			model.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/update");
+		}
 	}
 
 	// Update book process
 	@PostMapping("/updateBook")
-	public String processUpdate(@ModelAttribute("update") Book book, Model bookModel,
+	public ModelAndView processUpdate(@ModelAttribute("update") Book book, Model bookModel,
 			@RequestParam(name = "bookId") int bookId, @RequestParam(name = "authorId") int authorId,
 			@RequestParam(name = "publishId") int publishId) {
-		// POJO
-		Book updatedBook = bookService.findById(bookId);
-		System.out.println(bookId);
-		Author get = authorService.findById(authorId);
-		get.getBook().add(book);
-		updatedBook.setAuthor(get);
-		Publisher foundedPublisher = publisherService.findById(publishId);
-		foundedPublisher.getBook().add(book);
-		updatedBook.setPublisher(foundedPublisher);
-		// Book credentials
-		updatedBook.setBookDescription(book.getBookDescription());
-		updatedBook.setBookTitle(book.getBookTitle());
-		updatedBook.setSeriesName(book.getSeriesName());
-		updatedBook.setIsbn(book.getIsbn());
-		updatedBook.setSubTitle(book.getBookTitle());
-		updatedBook.setBookTitle(book.getBookTitle());
-		bookService.update(updatedBook);
-		return "redirect:.";
+		try {
+			// POJO
+			Book updatedBook = bookService.findById(bookId);
+			System.out.println(bookId);
+			Author get = authorService.findById(authorId);
+			get.getBook().add(book);
+			updatedBook.setAuthor(get);
+			Publisher foundedPublisher = publisherService.findById(publishId);
+			foundedPublisher.getBook().add(book);
+			updatedBook.setPublisher(foundedPublisher);
+			// Book credentials
+			updatedBook.setBookDescription(book.getBookDescription());
+			updatedBook.setBookTitle(book.getBookTitle());
+			updatedBook.setSeriesName(book.getSeriesName());
+			updatedBook.setIsbn(book.getIsbn());
+			updatedBook.setSubTitle(book.getBookTitle());
+			updatedBook.setBookTitle(book.getBookTitle());
+			bookService.update(updatedBook);
+			return new ModelAndView("redirect:.");
+		} catch (Exception e) {
+			bookModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("redirect:.");
+		}
 	}
 
 	// Delete book process
 	@PostMapping("/delete_book/{id}")
-	public String deleteBook(@ModelAttribute("book") Book book, @PathVariable int id) {
-		book = bookService.findById(id);
-		bookService.removeBook(book);
-		return "redirect:..";
+	public ModelAndView deleteBook(@ModelAttribute("book") Book book, @PathVariable int id, Model updateModel) {
+		try {
+			book = bookService.findById(id);
+			bookService.removeBook(book);
+			return new ModelAndView("redirect:..");
+		} catch (Exception e) {
+			updateModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("redirect:..");
+		}
 	}
 
 	// Publisher
 	@GetMapping("/publisher")
-	public String showPublisher(@ModelAttribute("publish") Publisher publisher, Model publisherModel) {
-		publisherModel.addAttribute("publish", publisher);
-		List<Publisher> pub = publisherService.getAll();
-		publisherModel.addAttribute("pub", pub);
-		return "admin/publisher";
+	public ModelAndView showPublisher(@ModelAttribute("publish") Publisher publisher, Model publisherModel) {
+		try {
+			publisherModel.addAttribute("publish", publisher);
+			List<Publisher> pub = publisherService.getAll();
+			publisherModel.addAttribute("pub", pub);
+			return new ModelAndView("admin/publisher");
+		} catch (Exception e) {
+			publisherModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/publisher");
+		}
 
 	}
 
 	// Add publisher
 	@PostMapping("/add_publisher")
-	public String publisherProcess(@ModelAttribute("publish") Publisher publisher) {
-		publisherService.addPublisher(publisher);
-		return "redirect:.";
+	public ModelAndView publisherProcess(@ModelAttribute("publish") Publisher publisher) {
+		try {
+			publisherService.addPublisher(publisher);
+			return new ModelAndView("redirect:.");
+		} catch (Exception e) {
+			ModelAndView m = new ModelAndView();
+			m.addObject("message", e.getMessage());
+			return new ModelAndView("redirect:.");
+		}
+
 	}
 
 	@GetMapping("/update_publisher/{id}")
-	public String showUpdatePublisher(@ModelAttribute("publish") Publisher publisher, Model viewUpdateModel,
+	public ModelAndView showUpdatePub(@ModelAttribute("publish") Publisher publisher, Model updateModel,
 			@PathVariable(name = "id") int id) {
-		Publisher viewOfPublisher = publisherService.findById(id);
-		viewUpdateModel.addAttribute("publish", viewOfPublisher);
-		return "admin/update_publisher";
+		try {
+			Publisher viewOfPublisher = publisherService.findById(id);
+			updateModel.addAttribute("publish", viewOfPublisher);
+			return new ModelAndView("admin/update_publisher");
+		} catch (Exception e) {
+			updateModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/update_publisher");
+		}
 	}
 
 	// Update publisher
 	@PostMapping("/update_publisher/{id}")
-	public String updatePublisher(@ModelAttribute("publish") Publisher publisher, @PathVariable(name = "id") int id) {
-		Publisher update = publisherService.findById(id);
-		update.setPublisher(publisher.getPublisher());
-		update.setPublisherDescription(publisher.getPublisherDescription());
-		publisherService.updatePublisher(update);
-		return "redirect:..";
+	public ModelAndView updatePublisher(@ModelAttribute("publish") Publisher publisher, Model model,
+			@PathVariable(name = "id") int id) {
+		try {
+			Publisher update = publisherService.findById(id);
+			update.setPublisher(publisher.getPublisher());
+			update.setPublisherDescription(publisher.getPublisherDescription());
+			publisherService.updatePublisher(update);
+			return new ModelAndView("redirect:..");
+		} catch (Exception e) {
+			model.addAttribute("message", e.getMessage());
+			return new ModelAndView("redirect:..");
+		}
 	}
 
 	// Remove publisher
 	@PostMapping("/delete_publisher/{id}")
-	public String deletePublisher(@ModelAttribute("publish") Publisher publisher, @PathVariable int id) {
-		publisher = publisherService.findById(id);
-		publisherService.removePublisher(publisher);
-		return "redirect:..";
+	public ModelAndView deletePublisher(@ModelAttribute("publish") Publisher publisher, @PathVariable int id) {
+		try {
+
+			publisher = publisherService.findById(id);
+			publisherService.removePublisher(publisher);
+			return new ModelAndView("redirect:..");
+		} catch (Exception e) {
+			ModelAndView m = new ModelAndView();
+			m.addObject("message", e.getMessage());
+			return new ModelAndView("redirect:..");
+		}
 	}
 
 	// Author page view
 	@GetMapping("/author")
-	public String showAuthor(@ModelAttribute("author") Author author, Model authorModel) {
-		authorModel.addAttribute("author", author);
-		List<Author> authorList = authorService.getAllAuthor();
-		authorModel.addAttribute("authorList", authorList);
-		return "admin/author";
+	public ModelAndView showAuthor(@ModelAttribute("author") Author author, Model authorModel) {
+		try {
+			authorModel.addAttribute("author", author);
+			List<Author> authorList = authorService.getAllAuthor();
+			authorModel.addAttribute("authorList", authorList);
+			return new ModelAndView("admin/author");
+		} catch (Exception e) {
+			authorModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/author");
+		}
 	}
 
 	// Add Author
 	@PostMapping("/add_author")
-	public String authorProcess(@ModelAttribute("author") Author addAuthor) {
+	public ModelAndView authorProcess(@ModelAttribute("author") Author addAuthor) {
 		authorService.saveAuthor(addAuthor);
-		return "redirect:.";
+		return new ModelAndView("redirect:.");
 	}
 
 	// Remove Author
 	@PostMapping("/delete_author/{id}")
-	public String deleteAuthor(@ModelAttribute("author") Author author, @PathVariable int id) {
-		author = authorService.findById(id);
-		authorService.removeAuthor(author);
-		return "redirect:..";
+	public ModelAndView deleteAuthor(@ModelAttribute("author") Author author, @PathVariable int id) {
+		try {
+			author = authorService.findById(id);
+			authorService.removeAuthor(author);
+			return new ModelAndView("redirect:..");
+		} catch (Exception e) {
+			ModelAndView m = new ModelAndView();
+			m.addObject("message", e.getMessage());
+			return new ModelAndView("redirect:..");
+		}
 	}
 
 	@GetMapping("/update_author/{id}")
-	public String showUpdateAuthor(@ModelAttribute("author") Author author, Model viewUpdateModel,
+	public ModelAndView showUpdateAuthor(@ModelAttribute("author") Author author, Model viewUpdateModel,
 			@PathVariable(name = "id") int id) {
-		Author viewOfAuthor = authorService.findById(id);
-		viewUpdateModel.addAttribute("author", viewOfAuthor);
-		return "admin/update_author";
+		try {
+			Author viewOfAuthor = authorService.findById(id);
+			viewUpdateModel.addAttribute("author", viewOfAuthor);
+			return new ModelAndView("admin/update_author");
+		} catch (Exception e) {
+			viewUpdateModel.addAttribute("message", e.getMessage());
+			return new ModelAndView("admin/update_author");
+		}
 	}
 
 	// Update author
 	@PostMapping("/update_author/{id}")
-	public String updateAuthor(@ModelAttribute("author") Author author, @PathVariable(name = "id") int id) {
-		Author update = authorService.findById(id);
-		update.setAuthorName(author.getAuthorName());
-		update.setAuthorSummary(author.getAuthorSummary());
-		authorService.updateAuthor(update);
-		return "redirect:..";
+	public ModelAndView updateAuthor(@ModelAttribute("author") Author author, @PathVariable(name = "id") int id) {
+		try {
+			Author update = authorService.findById(id);
+			update.setAuthorName(author.getAuthorName());
+			update.setAuthorSummary(author.getAuthorSummary());
+			authorService.updateAuthor(update);
+			return new ModelAndView("redirect:..");
+		} catch (Exception e) {
+			ModelAndView m = new ModelAndView();
+			m.addObject("message", e.getMessage());
+			return new ModelAndView("redirect:..");
+		}
 	}
 
 }
